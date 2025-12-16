@@ -1,0 +1,215 @@
+---
+sidebar_position: 3
+title: "Chapter 3: Sensors and Perception"
+description: "How robots sense and understand their environment"
+---
+
+# Sensors and Perception
+
+For robots to interact with the physical world, they must first perceive it. This chapter covers the sensors that give robots their "senses" and the algorithms that transform raw sensor data into meaningful understanding.
+
+## The Perception Pipeline
+
+```
+Raw Sensor Data → Preprocessing → Feature Extraction → Object Recognition → Scene Understanding
+```
+
+## Vision Systems
+
+### Camera Types
+
+| Camera Type | Output | Best For |
+|-------------|--------|----------|
+| RGB Camera | Color images | Object recognition |
+| Depth Camera | Distance to each pixel | 3D mapping |
+| Stereo Camera | Depth from two views | Outdoor navigation |
+| Event Camera | Pixel-level changes | High-speed tracking |
+
+### RGB-D Sensors
+
+Combining color and depth:
+
+- **Intel RealSense**: Popular in research
+- **Microsoft Kinect**: Consumer depth sensing pioneer
+- **Orbbec**: Cost-effective alternatives
+
+### LiDAR (Light Detection and Ranging)
+
+How LiDAR works:
+
+1. Emit laser pulses
+2. Measure time-of-flight
+3. Calculate distance
+4. Build 3D point cloud
+
+**Types**:
+- **Spinning LiDAR**: 360° coverage (Velodyne, Ouster)
+- **Solid-State**: No moving parts (Livox)
+- **Flash LiDAR**: Single pulse illumination
+
+## Tactile Sensing
+
+### Force/Torque Sensors
+
+Measure forces and torques at:
+- Robot wrists
+- Fingertips
+- Feet (for balance)
+
+### Tactile Arrays
+
+High-resolution touch sensing:
+
+```
+Applications:
+├── Grasp detection
+├── Slip prevention
+├── Object texture recognition
+└── Safe human-robot interaction
+```
+
+### Artificial Skin
+
+Emerging technology providing:
+- Full-body contact sensing
+- Temperature detection
+- Proximity sensing
+
+## Proprioceptive Sensing
+
+### Joint Encoders
+
+Measure joint positions:
+- **Absolute encoders**: Know position at startup
+- **Incremental encoders**: Track relative changes
+- **Resolution**: Typically 12-16 bits
+
+### Inertial Measurement Units (IMU)
+
+Combining:
+- **Accelerometer**: Linear acceleration (3-axis)
+- **Gyroscope**: Angular velocity (3-axis)
+- **Magnetometer**: Heading (optional)
+
+Used for:
+- Balance control
+- Motion estimation
+- Fall detection
+
+## Computer Vision Algorithms
+
+### Object Detection
+
+Modern approaches:
+
+| Method | Speed | Accuracy | Use Case |
+|--------|-------|----------|----------|
+| YOLO | Very Fast | Good | Real-time |
+| Faster R-CNN | Medium | Very Good | Accuracy-critical |
+| Vision Transformers | Slow | Excellent | High performance |
+
+### Pose Estimation
+
+Determining object orientation:
+
+1. **6-DoF Pose**: Position (x, y, z) + Orientation (roll, pitch, yaw)
+2. **Methods**: Feature matching, deep learning, ICP
+3. **Challenges**: Occlusion, symmetry, texture-less objects
+
+### Semantic Segmentation
+
+Pixel-level classification:
+
+```
+Input Image → Neural Network → Per-pixel class labels
+                              (floor, table, person, robot...)
+```
+
+## Point Cloud Processing
+
+### From LiDAR and Depth Cameras
+
+Processing steps:
+1. **Filtering**: Remove noise and outliers
+2. **Downsampling**: Reduce data volume
+3. **Segmentation**: Group into objects
+4. **Registration**: Align multiple scans
+
+### 3D Object Recognition
+
+Methods:
+- PointNet/PointNet++: Direct point processing
+- Voxel-based: Convert to 3D grid
+- Multi-view: Render and use 2D networks
+
+## Sensor Fusion
+
+Combining multiple sensors for robust perception:
+
+### Kalman Filter
+
+Optimal estimation combining:
+- Predictions from motion model
+- Measurements from sensors
+
+```
+Prediction Step: x̂ₖ = Ax̂ₖ₋₁ + Buₖ
+Update Step:     x̂ₖ = x̂ₖ + K(zₖ - Hx̂ₖ)
+```
+
+### Multi-Modal Fusion
+
+| Fusion Level | Description | Example |
+|--------------|-------------|---------|
+| Early | Raw data combination | RGB + Depth pixels |
+| Mid | Feature combination | CNN features merged |
+| Late | Decision combination | Vote among sensors |
+
+## SLAM (Simultaneous Localization and Mapping)
+
+Building maps while tracking position:
+
+### Visual SLAM
+
+Using cameras:
+- **ORB-SLAM**: Feature-based, efficient
+- **LSD-SLAM**: Direct methods
+- **RTAB-Map**: RGB-D focused
+
+### LiDAR SLAM
+
+Using laser scanners:
+- **Cartographer**: Google's approach
+- **LeGO-LOAM**: Ground vehicle focus
+- **KISS-ICP**: Simple and effective
+
+## Perception Challenges
+
+### Real-World Difficulties
+
+- **Lighting variation**: Shadows, glare, darkness
+- **Occlusion**: Objects blocking each other
+- **Motion blur**: Fast movement degrades images
+- **Sensor noise**: All sensors have errors
+- **Dynamic scenes**: Moving objects and people
+
+### Dealing with Uncertainty
+
+Robots must:
+1. Quantify confidence in perceptions
+2. Make decisions under uncertainty
+3. Actively gather information when unsure
+
+## Key Takeaways
+
+- Robots combine multiple sensors (vision, touch, proprioception)
+- Deep learning has revolutionized visual perception
+- Sensor fusion improves robustness over single sensors
+- SLAM enables autonomous navigation in unknown environments
+- Real-world perception must handle noise and uncertainty
+
+---
+
+*Previous: [Chapter 2: Humanoid Robotics Fundamentals](/chapters/ch2-humanoid-fundamentals)*
+
+*Next: [Chapter 4: Motion Planning and Control](/chapters/ch4-motion-planning)*

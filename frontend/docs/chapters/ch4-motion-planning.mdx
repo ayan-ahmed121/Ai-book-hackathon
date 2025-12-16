@@ -1,0 +1,263 @@
+---
+sidebar_position: 4
+title: "Chapter 4: Motion Planning and Control"
+description: "Algorithms for robot movement and trajectory execution"
+---
+
+# Motion Planning and Control
+
+Motion planning answers the question: "How do I get from here to there?" Control ensures the robot actually follows the planned path. This chapter covers the algorithms and techniques that enable robots to move safely and efficiently.
+
+## The Motion Planning Problem
+
+Given:
+- **Start configuration**: Current robot state
+- **Goal configuration**: Desired end state
+- **Environment**: Obstacles and constraints
+
+Find:
+- **Collision-free path** from start to goal
+- **Time-parameterized trajectory** if needed
+
+## Configuration Space
+
+### What is C-Space?
+
+The configuration space represents all possible robot states:
+
+| Robot Type | Configuration | Dimension |
+|------------|---------------|-----------|
+| Mobile robot (2D) | (x, y, θ) | 3D |
+| Robot arm (6-DoF) | (θ₁, θ₂, ..., θ₆) | 6D |
+| Humanoid | All joint angles | 40-60D |
+
+### C-Space Obstacles
+
+Obstacles in the physical world map to regions in C-space:
+
+```
+Workspace Obstacle → C-Space Obstacle Region
+Robot Configuration → Point in C-Space
+```
+
+## Sampling-Based Planning
+
+### Rapidly-exploring Random Trees (RRT)
+
+Algorithm:
+1. Sample random configuration
+2. Find nearest node in tree
+3. Extend toward sample
+4. Check for collisions
+5. Repeat until goal reached
+
+**Variants**:
+- **RRT***: Optimal path finding
+- **RRT-Connect**: Bidirectional growth
+- **Informed RRT***: Goal-biased sampling
+
+### Probabilistic Roadmap (PRM)
+
+Two-phase approach:
+
+**Construction Phase**:
+```
+For many samples:
+  If collision-free:
+    Add as node
+    Connect to nearby nodes
+```
+
+**Query Phase**:
+- Connect start and goal to roadmap
+- Search graph for path
+
+## Graph-Based Planning
+
+### A* Algorithm
+
+Optimal path on a graph:
+
+```
+f(n) = g(n) + h(n)
+
+Where:
+- g(n): Cost from start to n
+- h(n): Heuristic estimate to goal
+- f(n): Total estimated cost
+```
+
+### Dijkstra's Algorithm
+
+Like A* but without heuristic:
+- Guarantees optimal path
+- Explores more nodes
+- Works with any graph
+
+## Trajectory Optimization
+
+### Path vs Trajectory
+
+- **Path**: Sequence of configurations (no time)
+- **Trajectory**: Path + timing information
+
+### Optimization Objectives
+
+| Objective | Description |
+|-----------|-------------|
+| Minimum time | Fastest execution |
+| Minimum energy | Lowest power consumption |
+| Minimum jerk | Smoothest motion |
+| Minimum distance | Shortest path |
+
+### CHOMP (Covariant Hamiltonian Optimization)
+
+Iteratively improves trajectories:
+1. Start with initial path
+2. Compute collision costs
+3. Compute smoothness costs
+4. Gradient descent optimization
+
+## Control Fundamentals
+
+### Feedback Control
+
+The basic control loop:
+
+```
+Reference → [Controller] → [Robot] → Output
+                ↑                      |
+                └────── Feedback ──────┘
+```
+
+### PID Control
+
+Proportional-Integral-Derivative:
+
+```
+u(t) = Kp·e(t) + Ki·∫e(t)dt + Kd·(de/dt)
+
+Where e(t) = desired - actual
+```
+
+| Term | Effect | Tuning |
+|------|--------|--------|
+| P | Proportional response | Increase for faster response |
+| I | Eliminates steady-state error | Increase slowly, causes oscillation |
+| D | Dampens oscillation | Increase for stability |
+
+## Advanced Control Methods
+
+### Model Predictive Control (MPC)
+
+Optimizes over a future horizon:
+
+1. Predict future states using model
+2. Optimize control inputs
+3. Apply first control
+4. Repeat at next timestep
+
+**Advantages**:
+- Handles constraints explicitly
+- Considers future implications
+- Works with multivariable systems
+
+### Impedance Control
+
+Controls the relationship between force and motion:
+
+```
+F = K(x - x₀) + B(ẋ - ẋ₀)
+
+Where:
+- K: Virtual stiffness
+- B: Virtual damping
+- x₀: Equilibrium position
+```
+
+Used for:
+- Safe human-robot interaction
+- Assembly tasks
+- Surface following
+
+## Bipedal Walking Control
+
+### Zero Moment Point (ZMP)
+
+The point where the sum of moments equals zero:
+- Must stay within support polygon for static stability
+- Can briefly exit during dynamic walking
+
+### Whole-Body Control
+
+Managing all joints simultaneously:
+
+```
+Task Hierarchy:
+1. Balance (highest priority)
+2. Collision avoidance
+3. Task execution
+4. Posture (lowest priority)
+```
+
+### Walking Pattern Generation
+
+Steps:
+1. Footstep planning
+2. CoM trajectory generation
+3. ZMP trajectory calculation
+4. Inverse kinematics for joints
+
+## Manipulation Planning
+
+### Task Space vs Joint Space
+
+| Space | Description | Used For |
+|-------|-------------|----------|
+| Task Space | End-effector position/orientation | Goal specification |
+| Joint Space | Individual joint angles | Execution |
+
+### Inverse Kinematics (IK)
+
+Converting task space to joint space:
+
+```
+Given: Desired end-effector pose
+Find: Joint angles to achieve it
+```
+
+**Methods**:
+- Analytical (closed-form solutions)
+- Numerical (iterative optimization)
+- Learning-based (neural networks)
+
+## Real-Time Considerations
+
+### Control Frequencies
+
+| System | Typical Frequency |
+|--------|-------------------|
+| High-level planning | 1-10 Hz |
+| Motion control | 100-1000 Hz |
+| Motor control | 1-10 kHz |
+
+### Latency Requirements
+
+For stable control:
+- Sensor → Decision → Actuator must be fast
+- Delays cause instability
+- Prediction compensates for delays
+
+## Key Takeaways
+
+- Motion planning finds collision-free paths through configuration space
+- Sampling-based planners (RRT, PRM) handle high-dimensional spaces
+- Trajectory optimization adds time and smoothness constraints
+- PID control is fundamental but advanced methods handle constraints
+- Real-time execution requires fast computation and low latency
+
+---
+
+*Previous: [Chapter 3: Sensors and Perception](/chapters/ch3-sensors-perception)*
+
+*Next: [Chapter 5: AI Integration in Robotics](/chapters/ch5-ai-integration)*

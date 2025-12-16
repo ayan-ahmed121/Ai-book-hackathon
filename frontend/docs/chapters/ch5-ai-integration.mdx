@@ -1,0 +1,282 @@
+---
+sidebar_position: 5
+title: "Chapter 5: AI Integration in Robotics"
+description: "Modern AI techniques powering intelligent robots"
+---
+
+# AI Integration in Robotics
+
+Modern robotics is being transformed by artificial intelligence. This chapter explores how machine learning, deep learning, and foundation models are enabling robots to perceive, reason, and act in increasingly sophisticated ways.
+
+## The AI-Robotics Convergence
+
+Traditional robotics relied on:
+- Hand-crafted algorithms
+- Explicit programming
+- Carefully designed rules
+
+Modern AI enables:
+- Learning from data
+- Generalization to new situations
+- End-to-end learned systems
+
+## Machine Learning for Robotics
+
+### Supervised Learning
+
+Learning from labeled examples:
+
+```
+Training: (observation, action) pairs
+Result: Policy that maps observations → actions
+```
+
+**Applications**:
+- Object classification
+- Grasp point prediction
+- Gesture recognition
+
+### Reinforcement Learning (RL)
+
+Learning through trial and error:
+
+| Component | Role |
+|-----------|------|
+| Agent | The robot |
+| Environment | Physical or simulated world |
+| State | Current situation |
+| Action | Robot's choice |
+| Reward | Feedback signal |
+
+**Key Algorithms**:
+- **PPO**: Proximal Policy Optimization
+- **SAC**: Soft Actor-Critic
+- **TD3**: Twin Delayed DDPG
+
+### Imitation Learning
+
+Learning from demonstrations:
+
+```
+Expert Demonstrations → Learning Algorithm → Robot Policy
+
+Methods:
+├── Behavior Cloning (direct copying)
+├── Inverse RL (infer reward function)
+└── DAGGER (interactive improvement)
+```
+
+## Deep Learning in Perception
+
+### Convolutional Neural Networks (CNNs)
+
+For visual processing:
+
+```
+Image → Conv Layers → Pooling → FC Layers → Output
+        Features      Downsample  Classification
+```
+
+**Architectures**:
+- ResNet: Residual connections
+- EfficientNet: Efficient scaling
+- Vision Transformers: Attention-based
+
+### Transformer Models
+
+Attention-based processing:
+
+```
+Self-Attention: Each element attends to all others
+Cross-Attention: Query attends to different data
+
+Applications:
+- Multi-modal fusion
+- Sequence modeling
+- Object detection (DETR)
+```
+
+## Foundation Models for Robotics
+
+### What are Foundation Models?
+
+Large models trained on massive datasets:
+- Can be adapted to many downstream tasks
+- Capture general knowledge
+- Enable few-shot or zero-shot learning
+
+### Vision-Language Models
+
+| Model | Capability |
+|-------|------------|
+| CLIP | Image-text matching |
+| GPT-4V | Visual reasoning |
+| LLaVA | Visual conversation |
+| PaLM-E | Embodied reasoning |
+
+### Robotics Foundation Models
+
+Emerging approaches:
+- **RT-1/RT-2**: Google's robot transformers
+- **Octo**: Open-source generalist policy
+- **OpenVLA**: Vision-language-action model
+
+## Learning Robot Policies
+
+### End-to-End Learning
+
+Direct sensor to action mapping:
+
+```
+Camera Image → Neural Network → Motor Commands
+```
+
+**Advantages**: No hand-crafted features
+**Challenges**: Data hungry, hard to interpret
+
+### Modular Learning
+
+Separate learned components:
+
+```
+Perception → Planning → Control
+(learned)    (learned)  (learned or classical)
+```
+
+**Advantages**: Easier debugging, reusable modules
+
+## Sim-to-Real Transfer
+
+### The Reality Gap
+
+Simulators differ from reality:
+- Physics approximations
+- Sensor noise patterns
+- Visual appearance
+
+### Domain Randomization
+
+Training with varied simulation:
+
+```python
+# Randomize during training:
+randomize(
+    lighting,
+    textures,
+    physics_parameters,
+    sensor_noise,
+    object_shapes
+)
+```
+
+Result: Policies robust to real-world variation
+
+### Domain Adaptation
+
+Techniques to bridge the gap:
+- **Feature alignment**: Match distributions
+- **Progressive training**: Increase realism
+- **Fine-tuning**: Small real-world adjustments
+
+## Natural Language Interfaces
+
+### Language-Conditioned Policies
+
+Robots that understand instructions:
+
+```
+"Pick up the red cup and put it on the table"
+         ↓
+Language Encoder → Policy Network → Actions
+```
+
+### Large Language Models (LLMs) in Robotics
+
+Roles for LLMs:
+
+| Application | Description |
+|-------------|-------------|
+| Task Planning | Break high-level goals into steps |
+| Code Generation | Write robot control code |
+| Reasoning | Answer questions about tasks |
+| Error Recovery | Explain and fix failures |
+
+### Example: Language to Action
+
+```
+User: "Make me a sandwich"
+
+LLM Decomposition:
+1. Go to kitchen
+2. Get bread
+3. Get ingredients
+4. Assemble sandwich
+5. Bring to user
+```
+
+## Learning from Humans
+
+### Teleoperation Data Collection
+
+Collecting demonstrations:
+- VR controllers
+- Motion capture
+- Direct physical guidance
+- Video demonstrations
+
+### Human Feedback
+
+Improving policies with human input:
+- **RLHF**: Reinforcement Learning from Human Feedback
+- **Preference learning**: Comparing behaviors
+- **Corrections**: Direct policy adjustment
+
+## Safety in Learning Systems
+
+### Challenges
+
+- Learned policies can fail unexpectedly
+- Black-box nature limits interpretability
+- Distribution shift causes errors
+
+### Safety Approaches
+
+| Approach | Description |
+|----------|-------------|
+| Constrained RL | Include safety constraints |
+| Uncertainty estimation | Know when unsure |
+| Safe exploration | Avoid dangerous states |
+| Human oversight | Keep human in loop |
+
+## Current State and Future
+
+### What Works Today
+
+- Perception (object detection, segmentation)
+- Specific manipulation tasks
+- Structured environments
+
+### Active Research
+
+- General-purpose robots
+- Long-horizon reasoning
+- Multi-robot coordination
+- Continual learning
+
+### The Path Forward
+
+Foundation models + embodied AI = General-purpose robots?
+
+## Key Takeaways
+
+- AI transforms robotics from programmed to learned systems
+- Deep learning revolutionizes perception capabilities
+- Foundation models enable generalization and language understanding
+- Sim-to-real transfer bridges simulation and reality
+- Safety remains a critical concern for deployed systems
+
+---
+
+*Previous: [Chapter 4: Motion Planning and Control](/chapters/ch4-motion-planning)*
+
+*Next: [Chapter 6: Real-World Applications](/chapters/ch6-applications)*

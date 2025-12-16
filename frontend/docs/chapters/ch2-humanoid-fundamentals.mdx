@@ -1,0 +1,171 @@
+---
+sidebar_position: 2
+title: "Chapter 2: Humanoid Robotics Fundamentals"
+description: "Understanding the design principles and mechanics of humanoid robots"
+---
+
+# Humanoid Robotics Fundamentals
+
+Humanoid robots are designed to mimic the human form and movement. This chapter explores the fundamental principles behind building robots that can walk, manipulate objects, and interact naturally with human environments.
+
+## Why Humanoid Form?
+
+The humanoid design offers several advantages:
+
+- **Environment Compatibility**: Human spaces are designed for human bodies
+- **Natural Interaction**: People find humanoid robots intuitive to work with
+- **Tool Usage**: Can use tools designed for humans
+- **Versatility**: Bipedal locomotion enables navigation in varied terrain
+
+## Mechanical Design Principles
+
+### Skeletal Structure
+
+Humanoid robots require a rigid skeletal framework:
+
+| Component | Function | Typical Materials |
+|-----------|----------|-------------------|
+| Torso | Central support, houses electronics | Aluminum, carbon fiber |
+| Limbs | Movement and manipulation | Aluminum, titanium |
+| Joints | Articulation points | Steel, brass bearings |
+| Extremities | Interaction with environment | Plastics, silicone |
+
+### Degrees of Freedom (DoF)
+
+A typical humanoid robot has:
+
+- **Head**: 2-3 DoF (pan, tilt, optional roll)
+- **Arms**: 7 DoF each (shoulder 3, elbow 1, wrist 3)
+- **Torso**: 2-3 DoF (pitch, roll, yaw)
+- **Legs**: 6 DoF each (hip 3, knee 1, ankle 2)
+- **Hands**: 12-24 DoF (depending on dexterity requirements)
+
+**Total**: 40-60+ degrees of freedom
+
+## Actuation Systems
+
+### Electric Motors
+
+Most common in modern humanoids:
+
+```
+Types of Electric Actuators:
+├── Servo Motors (precise positioning)
+├── Brushless DC Motors (high efficiency)
+├── Linear Actuators (direct linear motion)
+└── Series Elastic Actuators (force control)
+```
+
+### Hydraulic Systems
+
+Used in high-power applications:
+
+- **Advantages**: High force-to-weight ratio
+- **Challenges**: Fluid leaks, complexity, noise
+- **Example**: Boston Dynamics Atlas (older versions)
+
+### Series Elastic Actuators (SEA)
+
+Modern approach combining:
+
+1. Motor + gearbox
+2. Elastic element (spring)
+3. Load measurement
+4. Force control capability
+
+## Balance and Stability
+
+### Center of Mass (CoM)
+
+The key to bipedal stability:
+
+- Must remain within the **support polygon**
+- Dynamic balance allows temporary instability
+- **Zero Moment Point (ZMP)**: Critical for walking
+
+### Stability Margins
+
+```
+Static Stability: CoM always over support
+Dynamic Stability: CoM may temporarily leave support
+Quasi-static: Slow movements maintaining stability
+```
+
+## Bipedal Locomotion
+
+### Walking Phases
+
+1. **Single Support**: One foot on ground
+2. **Double Support**: Both feet on ground
+3. **Swing Phase**: Moving leg in air
+4. **Stance Phase**: Supporting leg on ground
+
+### Gait Patterns
+
+| Gait Type | Speed | Stability | Energy |
+|-----------|-------|-----------|--------|
+| Walking | Low | High | Low |
+| Running | High | Low | Medium |
+| Hopping | Variable | Very Low | High |
+
+## Manipulation and Grasping
+
+### Hand Design
+
+Human-like hands enable:
+
+- **Power Grasp**: Holding heavy objects
+- **Precision Grasp**: Fine manipulation
+- **Pinch Grasp**: Small object handling
+
+### Manipulation Planning
+
+Key considerations:
+
+1. Object recognition and pose estimation
+2. Grasp point selection
+3. Motion planning for arm
+4. Force control during manipulation
+
+## Sensing for Humanoids
+
+Essential sensors include:
+
+- **Inertial Measurement Unit (IMU)**: Body orientation
+- **Force/Torque Sensors**: Foot and hand forces
+- **Joint Encoders**: Position and velocity
+- **Cameras**: Visual perception
+- **Microphones**: Audio for interaction
+
+## Famous Humanoid Robots
+
+| Robot | Organization | Notable Feature |
+|-------|--------------|-----------------|
+| ASIMO | Honda | First smooth walking humanoid |
+| Atlas | Boston Dynamics | Dynamic movement and parkour |
+| Optimus | Tesla | Manufacturing-focused design |
+| Digit | Agility Robotics | Commercial logistics focus |
+| Figure 01 | Figure AI | General-purpose assistant |
+
+## Design Trade-offs
+
+Every humanoid design balances:
+
+- **Weight vs Strength**: Lighter is better, but must handle loads
+- **DoF vs Complexity**: More joints = more capability but harder control
+- **Speed vs Precision**: Fast movement sacrifices accuracy
+- **Cost vs Performance**: Research vs commercial constraints
+
+## Key Takeaways
+
+- Humanoid robots mirror human form for compatibility with our world
+- 40-60+ degrees of freedom enable human-like movement
+- Balance requires sophisticated control of center of mass
+- Bipedal walking involves carefully timed phase transitions
+- Manipulation requires both power and precision grasping
+
+---
+
+*Previous: [Chapter 1: Introduction to Physical AI](/chapters/ch1-introduction)*
+
+*Next: [Chapter 3: Sensors and Perception](/chapters/ch3-sensors-perception)*

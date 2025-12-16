@@ -1,0 +1,655 @@
+openapi: 3.0.3
+info:
+  title: AI-Native Textbook API
+  description: Backend API for the Physical AI & Humanoid Robotics interactive textbook
+  version: 1.0.0
+  contact:
+    name: Textbook Team
+
+servers:
+  - url: /api
+    description: API base path
+
+tags:
+  - name: auth
+    description: Authentication endpoints (Better-Auth managed)
+  - name: user
+    description: User preferences and profile
+  - name: chat
+    description: RAG chatbot endpoints
+  - name: quiz
+    description: Quiz submission and history
+  - name: health
+    description: Service health checks
+
+paths:
+  # ============ AUTH (Better-Auth Managed) ============
+  /auth/sign-up:
+    post:
+      tags: [auth]
+      summary: Register new user
+      operationId: signUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already exists
+
+  /auth/sign-in:
+    post:
+      tags: [auth]
+      summary: Login user
+      operationId: signIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/sign-out:
+    post:
+      tags: [auth]
+      summary: Logout user
+      operationId: signOut
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      summary: Request password reset email
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset email sent (if account exists)
+
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      summary: Reset password with token
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired token
+
+  # ============ USER PREFERENCES ============
+  /user/preferences:
+    get:
+      tags: [user]
+      summary: Get current user preferences
+      operationId: getPreferences
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferences'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [user]
+      summary: Update user preferences
+      operationId: updatePreferences
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferences'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /user/profile:
+    get:
+      tags: [user]
+      summary: Get current user profile
+      operationId: getProfile
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============ CHAT (RAG) ============
+  /chat:
+    post:
+      tags: [chat]
+      summary: Ask a question to the RAG chatbot
+      operationId: askQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chatbot response with sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          description: Rate limit exceeded
+
+  /chat/history:
+    get:
+      tags: [chat]
+      summary: Get chat history for current session
+      operationId: getChatHistory
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: sessionId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Chat history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============ QUIZ ============
+  /quiz/{chapterId}:
+    get:
+      tags: [quiz]
+      summary: Get quiz for a chapter
+      operationId: getQuiz
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '404':
+          description: Quiz not found
+
+  /quiz/{chapterId}/submit:
+    post:
+      tags: [quiz]
+      summary: Submit quiz answers
+      operationId: submitQuiz
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmission'
+      responses:
+        '200':
+          description: Quiz result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /quiz/history:
+    get:
+      tags: [quiz]
+      summary: Get user's quiz attempt history
+      operationId: getQuizHistory
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: chapterId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz attempts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizAttempt'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============ CONTENT PERSONALIZATION ============
+  /content/{chapterId}/personalized:
+    get:
+      tags: [user]
+      summary: Get personalized chapter content based on user background
+      operationId: getPersonalizedContent
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Personalized content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalizedContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Chapter not found
+
+  # ============ HEALTH ============
+  /health:
+    get:
+      tags: [health]
+      summary: Service health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: Service unhealthy
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: better-auth.session_token
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    # Auth Schemas
+    SignUpRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    SignInRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        session:
+          type: object
+          properties:
+            id:
+              type: string
+            expiresAt:
+              type: string
+              format: date-time
+
+    # User Schemas
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        emailVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    UserPreferences:
+      type: object
+      properties:
+        backgroundLevel:
+          type: string
+          enum: [beginner, intermediate, expert]
+        language:
+          type: string
+          enum: [en, ur]
+        theme:
+          type: string
+          enum: [light, dark]
+
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        backgroundLevel:
+          type: string
+          enum: [beginner, intermediate, expert]
+        language:
+          type: string
+          enum: [en, ur]
+        theme:
+          type: string
+          enum: [light, dark]
+
+    # Chat Schemas
+    ChatRequest:
+      type: object
+      required: [question]
+      properties:
+        question:
+          type: string
+          maxLength: 1000
+        sessionId:
+          type: string
+        chapterId:
+          type: string
+          description: Optional - scope search to specific chapter
+
+    ChatResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+        sessionId:
+          type: string
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+        question:
+          type: string
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+        createdAt:
+          type: string
+          format: date-time
+
+    Source:
+      type: object
+      properties:
+        chapterId:
+          type: string
+        sectionTitle:
+          type: string
+        relevanceScore:
+          type: number
+          format: float
+
+    # Quiz Schemas
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+        chapterId:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+        passingScore:
+          type: integer
+          default: 70
+
+    QuizQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+          minItems: 4
+          maxItems: 4
+
+    QuizSubmission:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              selectedIndex:
+                type: integer
+                minimum: 0
+                maximum: 3
+
+    QuizResult:
+      type: object
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        passed:
+          type: boolean
+        correctAnswers:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              correctIndex:
+                type: integer
+              explanation:
+                type: string
+              userCorrect:
+                type: boolean
+
+    QuizAttempt:
+      type: object
+      properties:
+        id:
+          type: string
+        quizId:
+          type: string
+        score:
+          type: integer
+        passed:
+          type: boolean
+        completedAt:
+          type: string
+          format: date-time
+
+    # Content Schemas
+    PersonalizedContent:
+      type: object
+      properties:
+        chapterId:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+          description: Adapted markdown content
+        summary:
+          type: array
+          items:
+            type: string
+        backgroundLevel:
+          type: string
+          enum: [beginner, intermediate, expert]
+
+    # Health Schemas
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [up, down]
+            vectorDb:
+              type: string
+              enum: [up, down]
+            email:
+              type: string
+              enum: [up, down]
+        timestamp:
+          type: string
+          format: date-time
+
+    # Error Schema
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
